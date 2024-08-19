@@ -5,9 +5,15 @@
         <div
           class="square"
           [ngClass]="{
-            dark: isSquareBlack(x, y),
-            light: !isSquareBlack(x, y),
-          }">
+            'dark': isSquareBlack(x, y),
+            'light': !isSquareBlack(x, y),
+            'selected-square': isSquareSelected(x, y),
+            'last-move': isSquareLastMove(x,y),
+            'king-in-check': isSquareChecked(x,y),
+          }"
+          (click)="move(x, y)"
+          > 
+          <div [ngClass]="{'safe-square': isSquareSafeForSelectedPiece(x, y)}"></div>
           @if (piece) {
             <img [src]="pieceImagePath[piece]" alt="piece" class="piece" />
           }
