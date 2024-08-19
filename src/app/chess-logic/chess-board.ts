@@ -276,6 +276,14 @@ export class chessBoard {
           if (this.canCastle(piece, false)) {
             pieceSafeSquares.push({ x, y: 2 });
           }
+        } else if (
+          piece instanceof Pawn &&
+          this.canCaptureEnPassant(piece, x, y)
+        ) {
+          pieceSafeSquares.push({
+            x: x + (piece.color === Color.White ? 1 : -1),
+            y: this._lastMove!.prevY,
+          });
         }
 
         if (pieceSafeSquares.length) {
@@ -285,6 +293,44 @@ export class chessBoard {
     }
 
     return safeSqures;
+  }
+
+  private canCaptureEnPassant(
+    pawn: Pawn,
+    pawnX: number,
+    pawnY: number
+  ): boolean {
+    if (this.lastMove === undefined) {
+      return false;
+    }
+
+    const { piece, prevX, prevY, currX, currY } = this.lastMove;
+
+    if (
+      !(piece instanceof Pawn) ||
+      pawn.color !== this._playerColor ||
+      Math.abs(currX - prevX) !== 2 ||
+      pawnX !== currX ||
+      Math.abs(pawnY - currY) !== 1
+    ) {
+      return false;
+    }
+
+    const pawnNewPositionX: number =
+      pawnX + (pawn.color === Color.White ? 1 : -1);
+    const pawnNewPositionY: number = currY;
+
+    this.chessBoard[currX][currY] = null;
+    const isPositionSafe: boolean = this.isPositionSafeAfterMove(
+      pawn,
+      pawnX,
+      pawnY,
+      pawnNewPositionX,
+      pawnNewPositionY
+    );
+    this.chessBoard[currX][currY] = piece;
+
+    return isPositionSafe;
   }
 
   private canCastle(king: King, kingSideCastle: boolean): boolean {
@@ -399,6 +445,15 @@ export class chessBoard {
       this.chessBoard[rookPositionX][rookPositionY] = null;
       this.chessBoard[rookPositionX][rookNewPositionY] = rook;
       rook.hasMoved = true;
+    } else if (
+      piece instanceof Pawn &&
+      this._lastMove &&
+      this._lastMove.piece instanceof Pawn &&
+      Math.abs(this._lastMove.currX - this._lastMove.prevX) === 2 &&
+      prevX === this._lastMove.currX &&
+      newY === this._lastMove.currY
+    ) {
+      this.chessBoard[this._lastMove.currX][this._lastMove.currY] = null;
     }
   }
 }
