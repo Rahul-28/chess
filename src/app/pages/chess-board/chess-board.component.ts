@@ -1,6 +1,14 @@
 import { Component } from '@angular/core';
 import { chessBoard } from '../../chess-logic/chess-board';
-import { CheckState, Color, Coords, FENChar, LastMove, pieceImagePaths, SafeSquares } from '../../chess-logic/models';
+import {
+  CheckState,
+  Color,
+  Coords,
+  FENChar,
+  LastMove,
+  pieceImagePaths,
+  SafeSquares,
+} from '../../chess-logic/models';
 import { CommonModule } from '@angular/common';
 import { SelectedSquare } from './models';
 
@@ -31,7 +39,7 @@ export class ChessBoardComponent {
   }
 
   public isSquareBlack(x: number, y: number): boolean {
-    return chessBoard.isSquareBlack({x, y});
+    return chessBoard.isSquareBlack({ x, y });
   }
 
   public isSquareSelected(x: number, y: number): boolean {
@@ -40,7 +48,9 @@ export class ChessBoardComponent {
   }
 
   public isSquareSafeForSelectedPiece(x: number, y: number): boolean {
-    return this.pieceSafeSquares.some(coords => coords.x === x && coords.y === y);
+    return this.pieceSafeSquares.some(
+      coords => coords.x === x && coords.y === y
+    );
   }
 
   private unmarkingPreviouslySelectedAndSafeSquares(): void {
@@ -49,33 +59,50 @@ export class ChessBoardComponent {
   }
 
   public isSquareLastMove(x: number, y: number): boolean {
-    if(!this.lastMove) return false;
+    if (!this.lastMove) return false;
     const { prevX, prevY, currX, currY } = this.lastMove;
-    return x === prevX && y === prevY || x === currX && y === currY;
+    return (x === prevX && y === prevY) || (x === currX && y === currY);
   }
 
   public isSquareChecked(x: number, y: number): boolean {
-    return this.checkState.isInCheck && this.checkState.x === x && this.checkState.y === y;
+    return (
+      this.checkState.isInCheck &&
+      this.checkState.x === x &&
+      this.checkState.y === y
+    );
   }
 
   public selectingPiece(x: number, y: number): void {
     const piece: FENChar | null = this.chessBoardView[x][y];
-    if (!piece) { return };
+    if (!piece) {
+      return;
+    }
 
     // can selected only one color at each players turn
-    if (this.isWrongPieceSelected(piece)) { return };
+    if (this.isWrongPieceSelected(piece)) {
+      return;
+    }
 
-    const isSameSquareClicked: boolean = !!this.selectedSquare.piece && this.selectedSquare.x === x && this.selectedSquare.y === y;
+    const isSameSquareClicked: boolean =
+      !!this.selectedSquare.piece &&
+      this.selectedSquare.x === x &&
+      this.selectedSquare.y === y;
     this.unmarkingPreviouslySelectedAndSafeSquares();
-    if (isSameSquareClicked) { return };
+    if (isSameSquareClicked) {
+      return;
+    }
 
     this.selectedSquare = { piece, x, y };
-    this.pieceSafeSquares = this.safeSquares.get(x + "," + y) || [];
+    this.pieceSafeSquares = this.safeSquares.get(x + ',' + y) || [];
   }
 
   private placingPiece(newX: number, newY: number): void {
-    if (!this.selectedSquare.piece) { return; }
-    if (!this.isSquareSafeForSelectedPiece(newX, newY)) { return; }
+    if (!this.selectedSquare.piece) {
+      return;
+    }
+    if (!this.isSquareSafeForSelectedPiece(newX, newY)) {
+      return;
+    }
 
     const { x: prevX, y: prevY } = this.selectedSquare;
     this.chessBoard.move(prevX, prevY, newX, newY);
@@ -86,12 +113,15 @@ export class ChessBoardComponent {
   }
 
   public move(x: number, y: number) {
-    this.selectingPiece(x,y);
-    this.placingPiece(x,y);
+    this.selectingPiece(x, y);
+    this.placingPiece(x, y);
   }
 
   private isWrongPieceSelected(piece: FENChar): boolean {
     const isWhitePieceSelected: boolean = piece === piece.toUpperCase();
-    return isWhitePieceSelected && this.playerColor === Color.Black || !isWhitePieceSelected && this.playerColor === Color.White;
+    return (
+      (isWhitePieceSelected && this.playerColor === Color.Black) ||
+      (!isWhitePieceSelected && this.playerColor === Color.White)
+    );
   }
 }
