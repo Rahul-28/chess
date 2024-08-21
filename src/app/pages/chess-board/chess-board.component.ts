@@ -30,6 +30,8 @@ export class ChessBoardComponent {
   private lastMove: LastMove | undefined = this.chessBoard.lastMove;
   private checkState: CheckState = this.chessBoard.checkState;
 
+  public flipMode: boolean = false;
+
   // handling Promotion
   public isPromotionActive: boolean = false;
   private promotionCoords: Coords | null = null;
@@ -45,6 +47,10 @@ export class ChessBoardComponent {
 
   public get gameOverMessage(): string | undefined {
     return this.chessBoard.gameOverMessage;
+  }
+
+  public flipBoard(): void {
+    this.flipMode = ! this.flipMode;
   }
 
   public promotionPieces(): FENChar[] {
