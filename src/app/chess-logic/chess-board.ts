@@ -1,3 +1,4 @@
+import { FENConvertor } from './FENConvertor';
 import {
   CheckState,
   Color,
@@ -21,9 +22,17 @@ export class ChessBoard {
   private _safeSquares: SafeSquares;
   private _lastMove: LastMove | undefined;
   private _checkState: CheckState = { isInCheck: false };
+
   private _isGameOver: boolean = false;
   private _gameOverMessage: string | undefined;
   private fiftyMoveRuleCounter: number = 0;
+
+  private fullNumberOfMoves: number = 1;
+  private threeFoldRepetitionDictionary = new Map<string, number>();
+  private threeFoldRepetitionFlag: boolean = false; 
+
+  private _boardAsFEN: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  private FENConvertor = new FENConvertor();
 
   constructor() {
     this.chessBoard = [
@@ -105,6 +114,10 @@ export class ChessBoard {
 
   public get gameOverMessage(): string | undefined {
     return this._gameOverMessage;
+  }
+
+  public get boardAsFen(): string {
+    return this._boardAsFEN;
   }
 
   public static isSquareBlack(coordinates: Coords): boolean {
@@ -449,6 +462,14 @@ export class ChessBoard {
       this._playerColor === Color.White ? Color.Black : Color.White;
     this.isInCheck(this._playerColor, true);
     this._safeSquares = this.findSafeSquares();
+
+    if (this._playerColor === Color.White) {
+      this.fullNumberOfMoves++;
+    }
+
+    this._boardAsFEN = this.FENConvertor.convertboardToFEN(this.chessBoard, this._playerColor, this._lastMove, this.fiftyMoveRuleCounter, this.fullNumberOfMoves);
+    this.updateThreeFoldRepetitionDictionary(this._boardAsFEN);
+
     this._isGameOver = this.isGameFinished();
   }
 
@@ -515,8 +536,7 @@ export class ChessBoard {
     const bishops = pieces.filter(piece => piece.piece instanceof Bishop);
     const areAllBishopsOfSameColor =
       new Set(
-        bishops.map(bishop =>
-          ChessBoard.isSquareBlack({ x: bishop.x, y: bishop.y })
+        bishops.map(bishop => ChessBoard.isSquareBlack({ x: bishop.x, y: bishop.y })
         )
       ).size === 1;
     return bishops.length === pieces.length - 1 && areAllBishopsOfSameColor;
@@ -537,6 +557,12 @@ export class ChessBoard {
       }
       return true;
     }
+
+    if (this.threeFoldRepetitionFlag) {
+      this._gameOverMessage = "Draw due to 3 fold Repetition";
+      return true;
+    }
+
     if (this.fiftyMoveRuleCounter === 50) {
       this._gameOverMessage = 'Draw due to 50 move rule';
       return true;
@@ -611,5 +637,20 @@ export class ChessBoard {
       return true;
 
     return false;
+  }
+
+  private updateThreeFoldRepetitionDictionary(FEN: string): void {
+    const threeFoldRepetitionFENKey: string = FEN.split(" ").slice(0, 4).join("");
+    const threeFoldRepetitionValue: number | undefined = this.threeFoldRepetitionDictionary.get(threeFoldRepetitionFENKey);
+
+    if (threeFoldRepetitionValue === undefined) {
+      this.threeFoldRepetitionDictionary.set(threeFoldRepetitionFENKey, 1);
+    } else {
+      if (threeFoldRepetitionValue === 2) {
+        this.threeFoldRepetitionFlag = true;
+        return;
+      }
+      this.threeFoldRepetitionDictionary.set(threeFoldRepetitionFENKey, 2);
+    }
   }
 }
