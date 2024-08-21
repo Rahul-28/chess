@@ -10,6 +10,7 @@
             'selected-square': isSquareSelected(x, y),
             'last-move': isSquareLastMove(x, y),
             'king-in-check': isSquareChecked(x, y),
+            'promotion-square': isSquarePromtionSquare(x, y),
           }"
           (click)="move(x, y)">
           <div
@@ -21,6 +22,26 @@
           }
         </div>
       }
+    </div>
+  }
+
+  @if (gameOverMessage) {
+    <h2 class="game-over-message">
+      {{ gameOverMessage }}
+    </h2>
+  }
+
+  @if (isPromotionActive) {
+    <div class="promotion-dialog">
+      @for (piece of promotionPieces(); track $index) {
+        <img
+          [src]="pieceImagePath[piece]"
+          [alt]="piece"
+          (click)="promotePiece(piece)" />
+      }
+      <span class="close-promotion-dialog" (click)="closePawnPromtionDialog()">
+        &times;
+      </span>
     </div>
   }
 </div>
