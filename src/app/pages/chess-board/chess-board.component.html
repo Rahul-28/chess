@@ -1,12 +1,12 @@
-<div class="chess-board" [ngClass]="{ 'rotated': flipMode }">
+<div class="chess-board" [ngClass]="{ rotated: flipMode }">
   @for (row of chessBoardView; let x = $index; track x) {
     <div class="row">
       @for (piece of row; let y = $index; track y) {
         <div
           class="square"
           [ngClass]="{
-            'dark': isSquareBlack(x, y),
-            'light': !isSquareBlack(x, y),
+            dark: isSquareBlack(x, y),
+            light: !isSquareBlack(x, y),
             'selected-square': isSquareSelected(x, y),
             'last-move': isSquareLastMove(x, y),
             'king-in-check': isSquareChecked(x, y),
@@ -18,7 +18,11 @@
               'safe-square': isSquareSafeForSelectedPiece(x, y),
             }"></div>
           @if (piece) {
-            <img [src]="pieceImagePath[piece]" [alt]="piece" class="piece"  [ngClass]="{ 'rotated': flipMode }"/>
+            <img
+              [src]="pieceImagePath[piece]"
+              [alt]="piece"
+              class="piece"
+              [ngClass]="{ rotated: flipMode }" />
           }
         </div>
       }

@@ -62,4 +62,4 @@ type KingNotChecked = {
 
 export type CheckState = KingChecked | KingNotChecked;
 
-export const columns = ["a", "b", "c", "d", "e", "f", "g", "h"] as const;
+export const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;

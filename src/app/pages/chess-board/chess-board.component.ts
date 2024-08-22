@@ -11,6 +11,7 @@ import {
 } from '../../chess-logic/models';
 import { CommonModule } from '@angular/common';
 import { SelectedSquare } from './models';
+import { ChessBoardService } from './chess-board.service';
 
 @Component({
   selector: 'app-chess-board',
@@ -20,7 +21,7 @@ import { SelectedSquare } from './models';
   styleUrl: './chess-board.component.css',
 })
 export class ChessBoardComponent {
-  private chessBoard = new ChessBoard();
+  protected chessBoard = new ChessBoard();
 
   public pieceImagePath = pieceImagePaths;
   public chessBoardView: (FENChar | null)[][] = this.chessBoard.chessBoardView;
@@ -31,6 +32,8 @@ export class ChessBoardComponent {
   private checkState: CheckState = this.chessBoard.checkState;
 
   public flipMode: boolean = false;
+
+  constructor(protected chessBoardService: ChessBoardService) {}
 
   // handling Promotion
   public isPromotionActive: boolean = false;
@@ -50,7 +53,7 @@ export class ChessBoardComponent {
   }
 
   public flipBoard(): void {
-    this.flipMode = ! this.flipMode;
+    this.flipMode = !this.flipMode;
   }
 
   public promotionPieces(): FENChar[] {
@@ -167,7 +170,7 @@ export class ChessBoardComponent {
     }
 
     const { x: prevX, y: prevY } = this.selectedSquare;
-    this.updateBoard(prevX, prevY, newX, newY);
+    this.updateBoard(prevX, prevY, newX, newY, this.promotedPiece);
   }
 
   public move(x: number, y: number) {
@@ -190,20 +193,20 @@ export class ChessBoardComponent {
     this.promotedPiece = piece;
     const { x: newX, y: newY } = this.promotionCoords;
     const { x: prevX, y: prevY } = this.selectedSquare;
-    this.updateBoard(prevX, prevY, newX, newY);
+    this.updateBoard(prevX, prevY, newX, newY, this.promotedPiece);
   }
 
-  private updateBoard(
+  protected updateBoard(
     prevX: number,
     prevY: number,
     newX: number,
-    newY: number
+    newY: number,
+    promotedPiece: FENChar | null
   ): void {
-    this.chessBoard.move(prevX, prevY, newX, newY, this.promotedPiece);
+    this.chessBoard.move(prevX, prevY, newX, newY, promotedPiece);
     this.chessBoardView = this.chessBoard.chessBoardView;
-    this.checkState = this.chessBoard.checkState;
-    this.lastMove = this.chessBoard.lastMove;
     this.unmarkingPreviouslySelectedAndSafeSquares();
+    this.chessBoardService.chessBoardState$.next(this.chessBoard.boardAsFEN);
   }
 
   public closePawnPromtionDialog(): void {

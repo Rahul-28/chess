@@ -1,4 +1,4 @@
-import { FENConvertor } from './FENConvertor';
+import { FENConverter } from './FENConverter';
 import {
   CheckState,
   Color,
@@ -29,10 +29,10 @@ export class ChessBoard {
 
   private fullNumberOfMoves: number = 1;
   private threeFoldRepetitionDictionary = new Map<string, number>();
-  private threeFoldRepetitionFlag: boolean = false; 
+  private threeFoldRepetitionFlag: boolean = false;
 
-  private _boardAsFEN: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-  private FENConvertor = new FENConvertor();
+  private _boardAsFEN: string = FENConverter.initalPosition;
+  private FENConverter = new FENConverter();
 
   constructor() {
     this.chessBoard = [
@@ -116,7 +116,7 @@ export class ChessBoard {
     return this._gameOverMessage;
   }
 
-  public get boardAsFen(): string {
+  public get boardAsFEN(): string {
     return this._boardAsFEN;
   }
 
@@ -467,7 +467,13 @@ export class ChessBoard {
       this.fullNumberOfMoves++;
     }
 
-    this._boardAsFEN = this.FENConvertor.convertboardToFEN(this.chessBoard, this._playerColor, this._lastMove, this.fiftyMoveRuleCounter, this.fullNumberOfMoves);
+    this._boardAsFEN = this.FENConverter.convertboardToFEN(
+      this.chessBoard,
+      this._playerColor,
+      this._lastMove,
+      this.fiftyMoveRuleCounter,
+      this.fullNumberOfMoves
+    );
     this.updateThreeFoldRepetitionDictionary(this._boardAsFEN);
 
     this._isGameOver = this.isGameFinished();
@@ -536,7 +542,8 @@ export class ChessBoard {
     const bishops = pieces.filter(piece => piece.piece instanceof Bishop);
     const areAllBishopsOfSameColor =
       new Set(
-        bishops.map(bishop => ChessBoard.isSquareBlack({ x: bishop.x, y: bishop.y })
+        bishops.map(bishop =>
+          ChessBoard.isSquareBlack({ x: bishop.x, y: bishop.y })
         )
       ).size === 1;
     return bishops.length === pieces.length - 1 && areAllBishopsOfSameColor;
@@ -559,7 +566,7 @@ export class ChessBoard {
     }
 
     if (this.threeFoldRepetitionFlag) {
-      this._gameOverMessage = "Draw due to 3 fold Repetition";
+      this._gameOverMessage = 'Draw due to 3 fold Repetition';
       return true;
     }
 
@@ -640,8 +647,11 @@ export class ChessBoard {
   }
 
   private updateThreeFoldRepetitionDictionary(FEN: string): void {
-    const threeFoldRepetitionFENKey: string = FEN.split(" ").slice(0, 4).join("");
-    const threeFoldRepetitionValue: number | undefined = this.threeFoldRepetitionDictionary.get(threeFoldRepetitionFENKey);
+    const threeFoldRepetitionFENKey: string = FEN.split(' ')
+      .slice(0, 4)
+      .join('');
+    const threeFoldRepetitionValue: number | undefined =
+      this.threeFoldRepetitionDictionary.get(threeFoldRepetitionFENKey);
 
     if (threeFoldRepetitionValue === undefined) {
       this.threeFoldRepetitionDictionary.set(threeFoldRepetitionFENKey, 1);
