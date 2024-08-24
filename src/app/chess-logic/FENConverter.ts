@@ -1,4 +1,5 @@
-import { Color, columns, LastMove } from './models';
+import { columns } from '../pages/chess-board/models';
+import { Color, LastMove } from './models';
 import { King } from './pieces/king';
 import { Pawn } from './pieces/pawn';
 import { Piece } from './pieces/pieces';
@@ -8,12 +9,12 @@ export class FENConverter {
   public static readonly initalPosition: string =
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
-  public convertboardToFEN(
+  public convertBoardToFEN(
     board: (Piece | null)[][],
     playerColor: Color,
     lastMove: LastMove | undefined,
     fiftyMoveRuleCounter: number,
-    NumberOfFullMoves: number
+    numberOfFullMoves: number
   ): string {
     let FEN: string = '';
 
@@ -21,35 +22,31 @@ export class FENConverter {
       let FENRow: string = '';
       let consecutiveEmptySquaresCounter = 0;
 
-      for (let piece of board[i]) {
+      for (const piece of board[i]) {
         if (!piece) {
           consecutiveEmptySquaresCounter++;
           continue;
         }
 
-        if (consecutiveEmptySquaresCounter !== 0) {
+        if (consecutiveEmptySquaresCounter !== 0)
           FENRow += String(consecutiveEmptySquaresCounter);
-        }
 
         consecutiveEmptySquaresCounter = 0;
         FENRow += piece.FENChar;
       }
 
-      if (consecutiveEmptySquaresCounter !== 0) {
+      if (consecutiveEmptySquaresCounter !== 0)
         FENRow += String(consecutiveEmptySquaresCounter);
-      }
 
       FEN += i === 0 ? FENRow : FENRow + '/';
     }
 
     const player: string = playerColor === Color.White ? 'w' : 'b';
-
     FEN += ' ' + player;
     FEN += ' ' + this.castlingAvailability(board);
-    FEN += ' ' + this.enPassantPossibilities(lastMove, playerColor);
+    FEN += ' ' + this.enPassantPosibility(lastMove, playerColor);
     FEN += ' ' + fiftyMoveRuleCounter * 2;
-    FEN += ' ' + NumberOfFullMoves;
-
+    FEN += ' ' + numberOfFullMoves;
     return FEN;
   }
 
@@ -61,39 +58,32 @@ export class FENConverter {
       const king: Piece | null = board[kingPositionX][4];
 
       if (king instanceof King && !king.hasMoved) {
-        const rookPositionX: number = color === Color.White ? 0 : 7;
+        const rookPositionX: number = kingPositionX;
         const kingSideRook = board[rookPositionX][7];
         const queenSideRook = board[rookPositionX][0];
 
-        if (kingSideRook instanceof Rook && !kingSideRook.hasMoved) {
+        if (kingSideRook instanceof Rook && !kingSideRook.hasMoved)
           castlingAvailability += 'k';
-        }
 
-        if (queenSideRook instanceof Rook && !queenSideRook.hasMoved) {
+        if (queenSideRook instanceof Rook && !queenSideRook.hasMoved)
           castlingAvailability += 'q';
-        }
 
-        if (color === Color.White) {
+        if (color === Color.White)
           castlingAvailability = castlingAvailability.toUpperCase();
-        }
       }
-
       return castlingAvailability;
     };
-    const finalCastlingAvailability: string =
-      castlingPossibilities(Color.White) + castlingPossibilities(Color.Black);
 
-    return finalCastlingAvailability !== '' ? finalCastlingAvailability : '-';
+    const castlingAvailability: string =
+      castlingPossibilities(Color.White) + castlingPossibilities(Color.Black);
+    return castlingAvailability !== '' ? castlingAvailability : '-';
   }
 
-  private enPassantPossibilities(
+  private enPassantPosibility(
     lastMove: LastMove | undefined,
     color: Color
   ): string {
-    if (!lastMove) {
-      return '-';
-    }
-
+    if (!lastMove) return '-';
     const { piece, currX: newX, prevX, prevY } = lastMove;
 
     if (piece instanceof Pawn && Math.abs(newX - prevX) === 2) {

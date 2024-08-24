@@ -1,6 +1,12 @@
-<mat-toolbar>
-  <button mat-button routerLink="/against-friend">Play against Friend</button>
-  <button mat-button routerLink="/computer">Play against Computer</button>
+<mat-toolbar color="primary" class="custom-toolbar">
+  <div class="toolbar-container">
+    <button mat-raised-button color="accent" routerLink="/against-friend">
+      Play against Friend
+    </button>
+    <button mat-raised-button color="warn" (click)="playAgainstComputer()">
+      Play against Computer
+    </button>
+  </div>
 </mat-toolbar>
 
-<router-outlet />
+<router-outlet></router-outlet>

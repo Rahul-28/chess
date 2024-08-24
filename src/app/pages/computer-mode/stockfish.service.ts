@@ -30,18 +30,21 @@ export class StockfishService {
   private promotedPiece(piece: string | undefined): FENChar | null {
     if (!piece) return null;
     const computerColor: Color = this.computerConfiguration$.value.color;
-    if (piece === 'n')
+    if (piece === 'n') {
       return computerColor === Color.White
         ? FENChar.WhiteKnight
         : FENChar.BlackKnight;
-    if (piece === 'b')
+    }
+    if (piece === 'b') {
       return computerColor === Color.White
         ? FENChar.WhiteBishop
         : FENChar.BlackBishop;
-    if (piece === 'r')
+    }
+    if (piece === 'r') {
       return computerColor === Color.White
         ? FENChar.WhiteRook
         : FENChar.BlackRook;
+    }
     return computerColor === Color.White
       ? FENChar.WhiteQueen
       : FENChar.BlackQueen;

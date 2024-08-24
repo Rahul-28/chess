@@ -12,15 +12,15 @@ export type Coords = {
 
 export enum FENChar {
   WhitePawn = 'P',
+  WhiteKnight = 'N',
   WhiteBishop = 'B',
   WhiteRook = 'R',
-  WhiteKnight = 'N',
   WhiteQueen = 'Q',
   WhiteKing = 'K',
   BlackPawn = 'p',
+  BlackKnight = 'n',
   BlackBishop = 'b',
   BlackRook = 'r',
-  BlackKnight = 'n',
   BlackQueen = 'q',
   BlackKing = 'k',
 }
@@ -42,12 +42,22 @@ export const pieceImagePaths: Readonly<Record<FENChar, string>> = {
 
 export type SafeSquares = Map<string, Coords[]>;
 
+export enum MoveType {
+  Capture,
+  Castling,
+  Promotion,
+  Check,
+  CheckMate,
+  BasicMove,
+}
+
 export type LastMove = {
   piece: Piece;
   prevX: number;
   prevY: number;
   currX: number;
   currY: number;
+  moveType: Set<MoveType>;
 };
 
 type KingChecked = {
@@ -62,4 +72,10 @@ type KingNotChecked = {
 
 export type CheckState = KingChecked | KingNotChecked;
 
-export const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
+export type MoveList = [string, string?][];
+
+export type GameHistory = {
+  lastMove: LastMove | undefined;
+  checkState: CheckState;
+  board: (FENChar | null)[][];
+}[];

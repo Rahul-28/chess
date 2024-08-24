@@ -6,11 +6,12 @@ import { ChessBoardService } from '../chess-board/chess-board.service';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { Color } from '../../chess-logic/models';
+import { MoveHistoryComponent } from '../move-history/move-history.component';
 
 @Component({
   selector: 'app-computer-mode',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule, HttpClientModule, MoveHistoryComponent],
   templateUrl: '../chess-board/chess-board.component.html',
   styleUrl: '../chess-board/chess-board.component.css',
 })
@@ -24,7 +25,9 @@ export class ComputerModeComponent
     super(inject(ChessBoardService));
   }
 
-  public ngOnInit(): void {
+  public override ngOnInit(): void {
+    super.ngOnInit();
+
     const computerConfiSubscription$: Subscription =
       this.stockfishService.computerConfiguration$.subscribe({
         next: computerConfiguration => {
@@ -57,7 +60,8 @@ export class ComputerModeComponent
     this.computerSubscriptions$.add(computerConfiSubscription$);
   }
 
-  public ngOnDestroy(): void {
+  public override ngOnDestroy(): void {
+    super.ngOnDestroy();
     this.computerSubscriptions$.unsubscribe();
   }
 }

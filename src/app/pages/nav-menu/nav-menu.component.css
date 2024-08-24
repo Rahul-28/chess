@@ -1,0 +1,46 @@
+.custom-toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.toolbar-container {
+  display: flex;
+  gap: 20px;
+}
+
+mat-toolbar {
+  background: linear-gradient(145deg, #1e3c72, #2a5298);
+}
+
+mat-button {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  text-transform: none;
+}
+
+mat-raised-button {
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+mat-raised-button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+mat-toolbar .toolbar-container button {
+  border-radius: 5px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+mat-toolbar .toolbar-container button:hover {
+  transform: translateY(-2px);
+}
+
+mat-toolbar .toolbar-container button:active {
+  transform: translateY(0);
+}
