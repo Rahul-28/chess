@@ -33,10 +33,10 @@ export class DialogComponent {
       color: color === 'w' ? Color.Black : Color.White,
       level: this.stockfishLevel,
     });
-    this.router.navigate(['computer']);
+    this.router.navigate(['playing-against-computer']);
   }
 
   public closeDialog(): void {
-    this.router.navigate(['against-friend']);
+    this.router.navigate(['playing-against-friend']);
   }
 }

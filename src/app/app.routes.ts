@@ -4,13 +4,22 @@ import { ComputerModeComponent } from './pages/computer-mode/computer-mode.compo
 
 export const routes: Routes = [
   {
-    path: 'against-friend',
+    path: 'playing-against-friend',
     component: ChessBoardComponent,
     title: 'play against friend',
   },
   {
-    path: 'computer',
+    path: 'playing-against-computer',
     component: ComputerModeComponent,
     title: 'play against computer',
+  },
+  // handling empty & wildcard routes
+  {
+    path: ' ',
+    redirectTo: 'playing-against-friend',
+  },
+  {
+    path: '**',
+    redirectTo: 'playing-against-friend',
   },
 ];
